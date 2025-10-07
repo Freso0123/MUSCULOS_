@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Anatomía Muscular</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 5px solid #fdbb2d;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .muscle-selection {
+            flex: 1;
+            min-width: 300px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .muscle-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .muscle-btn {
+            background: #4a6491;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            text-align: left;
+        }
+        
+        .muscle-btn:hover {
+            background: #2c3e50;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .muscle-btn.active {
+            background: #fdbb2d;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .quiz-area {
+            flex: 2;
+            min-width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .question {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .option:hover {
+            background: #e9ecef;
+            border-color: #4a6491;
+        }
+        
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .next-btn {
+            background: #4a6491;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .next-btn:hover {
+            background: #2c3e50;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .muscle-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .muscle-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #fdbb2d;
+            padding-bottom: 10px;
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
+        }
+        
+        .info-item h4 {
+            color: #4a6491;
+            margin-bottom: 5px;
+        }
+        
+        .info-item p {
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+            }
+            
+            .muscle-selection, .quiz-area {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Juego de Anatomía Muscular</h1>
+            <p class="subtitle">Aprende sobre el origen, inserción, inervación y función de los músculos del brazo y antebrazo</p>
+        </header>
+        
+        <div class="game-area">
+            <div class="muscle-selection">
+                <h2>Selecciona un músculo</h2>
+                <div class="muscle-list">
+                    <!-- Los botones se generarán con JavaScript -->
+                </div>
+            </div>
+            
+            <div class="quiz-area">
+                <div class="quiz-header">
+                    <h2>Cuestionario</h2>
+                    <div class="score">Puntuación: <span id="score-value">0</span></div>
+                </div>
+                
+                <div class="question" id="question-text">
+                    Selecciona un músculo para comenzar
+                </div>
+                
+                <div class="options" id="options-container">
+                    <!-- Las opciones se generarán con JavaScript -->
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+                
+                <button class="next-btn" id="next-btn" style="display: none;">Siguiente Pregunta</button>
+                
+                <div class="muscle-info" id="muscle-info">
+                    <!-- La información del músculo se generará con JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de músculos
+        const muscles = [
+            {
+                name: "Subescapular",
+                origin: "Fosa subescapular de la escápula",
+                insertion: "Tubérculo menor del húmero",
+                innervation: "Nervio subescapular (C5-C6)",
+                function: "Rotación interna del brazo"
+            },
+            {
+                name: "Supraespinoso",
+                origin: "Fosa supraespinosa de la escápula",
+                insertion: "Tubérculo mayor del húmero",
+                innervation: "Nervio supraescapular (C5-C6)",
+                function: "Inicia la abducción del brazo (primeros 15°) y estabiliza la articulación del hombro"
+            },
+            {
+                name: "Redondo menor",
+                origin: "Borde lateral de la escápula",
+                insertion: "Tubérculo mayor del húmero",
+                innervation: "Nervio axilar (C5-C6)",
+                function: "Rotación externa y aducción del brazo"
+            },
+            {
+                name: "Infraespinoso",
+                origin: "Fosa infraespinosa de la escápula",
+                insertion: "Tubérculo mayor del húmero",
+                innervation: "Nervio supraescapular (C5-C6)",
+                function: "Rotación externa del brazo"
+            },
+            {
+                name: "Tríceps braquial",
+                origin: "Cabeza larga: tubérculo infraglenoideo de la escápula. Cabeza lateral: cara posterior del húmero. Cabeza medial: cara posterior del húmero",
+                insertion: "Olecranon de la ulna",
+                innervation: "Nervio radial (C6-C8)",
+                function: "Extensión del antebrazo y aducción del brazo (cabeza larga)"
+            },
+            {
+                name: "Bíceps braquial",
+                origin: "Cabeza larga: tubérculo supraglenoideo de la escápula. Cabeza corta: proceso coracoideo de la escápula",
+                insertion: "Tuberosidad del radio y aponeurosis del bíceps",
+                innervation: "Nervio musculocutáneo (C5-C6)",
+                function: "Flexión y supinación del antebrazo, flexión del brazo"
+            },
+            {
+                name: "Braquiorradial",
+                origin: "Borde lateral del húmero",
+                insertion: "Proceso estiloides del radio",
+                innervation: "Nervio radial (C5-C6)",
+                function: "Flexión del antebrazo (especialmente en posición neutra)"
+            },
+            {
+                name: "Pronador redondo",
+                origin: "Epicóndilo medial del húmero y proceso coronoides de la ulna",
+                insertion: "Cara lateral del radio",
+                innervation: "Nervio mediano (C6-C7)",
+                function: "Pronación del antebrazo y flexión del codo"
+            },
+            {
+                name: "Extensor común de los dedos",
+                origin: "Epicóndilo lateral del húmero",
+                insertion: "Expansiones dorsales de los dedos 2-5",
+                innervation: "Nervio radial (C7-C8)",
+                function: "Extensión de los dedos 2-5 y extensión de la muñeca"
+            },
+            {
+                name: "Abductor del pulgar",
+                origin: "Superficies posteriores de la ulna y radio, y membrana interósea",
+                insertion: "Base del primer metacarpiano",
+                innervation: "Nervio radial (C7-C8)",
+                function: "Abducción del pulgar"
+            },
+            {
+                name: "Pronador cuadrado",
+                origin: "Cara anterior de la ulna",
+                insertion: "Cara anterior del radio",
+                innervation: "Nervio mediano (C8-T1)",
+                function: "Pronación del antebrazo"
+            },
+            {
+                name: "Extensor largo del pulgar",
+                origin: "Cara posterior de la ulna y membrana interósea",
+                insertion: "Base de la falange distal del pulgar",
+                innervation: "Nervio radial (C7-C8)",
+                function: "Extensión del pulgar"
+            }
+        ];
+
+        // Variables del juego
+        let currentMuscleIndex = 0;
+        let score = 0;
+        let currentQuestionType = '';
+        let gameActive = false;
+
+        // Elementos DOM
+        const muscleListElement = document.querySelector('.muscle-list');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainerElement = document.getElementById('options-container');
+        const feedbackElement = document.getElementById('feedback');
+        const nextButtonElement = document.getElementById('next-btn');
+        const muscleInfoElement = document.getElementById('muscle-info');
+        const scoreValueElement = document.getElementById('score-value');
+
+        // Inicializar el juego
+        function initGame() {
+            // Crear botones de músculos
+            muscles.forEach((muscle, index) => {
+                const button = document.createElement('button');
+                button.className = 'muscle-btn';
+                button.textContent = muscle.name;
+                button.addEventListener('click', () => selectMuscle(index));
+                muscleListElement.appendChild(button);
+            });
+            
+            // Configurar evento del botón siguiente
+            nextButtonElement.addEventListener('click', nextQuestion);
+        }
+
+        // Seleccionar un músculo
+        function selectMuscle(index) {
+            // Actualizar botones activos
+            document.querySelectorAll('.muscle-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.muscle-btn')[index].classList.add('active');
+            
+            currentMuscleIndex = index;
+            gameActive = true;
+            
+            // Mostrar información del músculo
+            showMuscleInfo();
+            
+            // Generar una pregunta aleatoria
+            generateQuestion();
+            
+            // Ocultar información del músculo inicialmente
+            muscleInfoElement.style.display = 'none';
+        }
+
+        // Mostrar información del músculo
+        function showMuscleInfo() {
+            const muscle = muscles[currentMuscleIndex];
+            
+            muscleInfoElement.innerHTML = `
+                <h3>${muscle.name}</h3>
+                <div class="info-item">
+                    <h4>Origen:</h4>
+                    <p>${muscle.origin}</p>
+                </div>
+                <div class="info-item">
+                    <h4>Inserción:</h4>
+                    <p>${muscle.insertion}</p>
+                </div>
+                <div class="info-item">
+                    <h4>Inervación:</h4>
+                    <p>${muscle.innervation}</p>
+                </div>
+                <div class="info-item">
+                    <h4>Función:</h4>
+                    <p>${muscle.function}</p>
+                </div>
+            `;
+        }
+
+        // Generar una pregunta aleatoria
+        function generateQuestion() {
+            if (!gameActive) return;
+            
+            const muscle = muscles[currentMuscleIndex];
+            const questionTypes = ['origin', 'insertion', 'innervation', 'function'];
+            currentQuestionType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+            
+            let questionText = '';
+            switch(currentQuestionType) {
+                case 'origin':
+                    questionText = `¿Cuál es el origen del músculo ${muscle.name}?`;
+                    break;
+                case 'insertion':
+                    questionText = `¿Cuál es la inserción del músculo ${muscle.name}?`;
+                    break;
+                case 'innervation':
+                    questionText = `¿Cuál es la inervación del músculo ${muscle.name}?`;
+                    break;
+                case 'function':
+                    questionText = `¿Cuál es la función del músculo ${muscle.name}?`;
+                    break;
+            }
+            
+            questionTextElement.textContent = questionText;
+            
+            // Generar opciones de respuesta
+            generateOptions();
+            
+            // Resetear interfaz
+            feedbackElement.className = 'feedback';
+            feedbackElement.style.display = 'none';
+            nextButtonElement.style.display = 'none';
+        }
+
+        // Generar opciones de respuesta
+        function generateOptions() {
+            optionsContainerElement.innerHTML = '';
+            const correctAnswer = muscles[currentMuscleIndex][currentQuestionType];
+            
+            // Obtener respuestas incorrectas de otros músculos
+            let incorrectAnswers = [];
+            for (let i = 0; i < muscles.length; i++) {
+                if (i !== currentMuscleIndex) {
+                    incorrectAnswers.push(muscles[i][currentQuestionType]);
+                }
+            }
+            
+            // Mezclar y seleccionar 3 respuestas incorrectas
+            incorrectAnswers = shuffleArray(incorrectAnswers).slice(0, 3);
+            
+            // Combinar respuestas correctas e incorrectas
+            const allAnswers = [correctAnswer, ...incorrectAnswers];
+            const shuffledAnswers = shuffleArray(allAnswers);
+            
+            // Crear elementos de opción
+            shuffledAnswers.forEach(answer => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = answer;
+                optionElement.addEventListener('click', () => checkAnswer(answer, correctAnswer));
+                optionsContainerElement.appendChild(optionElement);
+            });
+        }
+
+        // Verificar respuesta
+        function checkAnswer(selectedAnswer, correctAnswer) {
+            if (!gameActive) return;
+            
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.style.pointerEvents = 'none'; // Deshabilitar más clics
+                
+                if (option.textContent === correctAnswer) {
+                    option.classList.add('correct');
+                } else if (option.textContent === selectedAnswer) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Mostrar retroalimentación
+            if (selectedAnswer === correctAnswer) {
+                feedbackElement.textContent = '¡Correcto!';
+                feedbackElement.className = 'feedback correct';
+                score++;
+                scoreValueElement.textContent = score;
+            } else {
+                feedbackElement.textContent = `Incorrecto. La respuesta correcta es: ${correctAnswer}`;
+                feedbackElement.className = 'feedback incorrect';
+            }
+            
+            feedbackElement.style.display = 'block';
+            nextButtonElement.style.display = 'block';
+            
+            // Mostrar información del músculo después de responder
+            muscleInfoElement.style.display = 'block';
+        }
+
+        // Siguiente pregunta
+        function nextQuestion() {
+            // Seleccionar un músculo aleatorio diferente
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * muscles.length);
+            } while (newIndex === currentMuscleIndex && muscles.length > 1);
+            
+            // Actualizar botón activo
+            document.querySelectorAll('.muscle-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.muscle-btn')[newIndex].classList.add('active');
+            
+            currentMuscleIndex = newIndex;
+            generateQuestion();
+        }
+
+        // Función para mezclar array (algoritmo Fisher-Yates)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Inicializar el juego cuando se carga la página
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
